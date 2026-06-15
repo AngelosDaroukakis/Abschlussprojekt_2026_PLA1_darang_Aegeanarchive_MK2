@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="de">
+<head>
+    <script>
+        try {
+            if (localStorage.getItem("aegeanIntroSeen") === "true") {
+                document.documentElement.classList.add("intro-seen");
+            }
+        } catch (error) {}
+    </script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Aegean Archive{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/aegean.css') }}">
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    {% block intro %}{% endblock %}
+
+    <div class="app">
+        <div class="frame">
+            <div class="flag-line"></div>
+            <div class="meander-line"></div>
+
+            {% block content %}{% endblock %}
+
+            <footer>
+                <span>Αἰγαῖον Ἀρχεῖον</span>
+                <span>Aegean Archive</span>
+            </footer>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/aegean.js') }}"></script>
+</body>
+</html>

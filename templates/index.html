@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Aegean Archive{% endblock %}
+{% block body_class %}home locked{% endblock %}
+
+{% block intro %}
+<section class="intro" id="intro">
+    <canvas id="particles"></canvas>
+
+    <div class="blue-hour"></div>
+    <div class="sea sea-one"></div>
+    <div class="sea sea-two"></div>
+    <div class="sea sea-three"></div>
+
+    <div class="marble-door door-left"></div>
+    <div class="marble-door door-right"></div>
+    <div class="portal"></div>
+    <div class="shock"></div>
+
+    <div class="glyphs">
+        <span>Α</span><span>Ω</span><span>Φ</span><span>Σ</span><span>Λ</span><span>Θ</span><span>Ξ</span><span>Δ</span>
+    </div>
+
+    <div class="intro-card">
+        <div class="seal-stage">
+            <div class="sun"></div>
+
+            <div class="hellenic-seal">
+                <div class="seal-ring">
+                    <span>Α</span>
+                    <span>Ω</span>
+                </div>
+                <div class="seal-mark">
+                    <i></i><i></i><i></i>
+                </div>
+            </div>
+        </div>
+
+        <p class="ancient-title">Αἰγαῖον Ἀρχεῖον</p>
+        <h1>Aegean Archive</h1>
+        <p class="intro-slogan">„Wo Erinnerungen wie Marmor für immer bleiben.“</p>
+
+        <button class="enter" type="button">Archiv betreten</button>
+        <p class="hint">Klick öffnet das Marmortor</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<header class="hero">
+    <div class="hero-sun"></div>
+    <div class="cycladic-shapes">
+        <span class="dome"></span>
+        <span class="wall wall-one"></span>
+        <span class="wall wall-two"></span>
+        <span class="arch"></span>
+    </div>
+
+    <div class="hero-content">
+        <p class="kicker">Hellenic Photo Archive</p>
+        <p class="greek-title">Αἰγαῖον Ἀρχεῖον</p>
+        <h1>Aegean Archive</h1>
+        <p class="slogan">„Wo Erinnerungen wie Marmor für immer bleiben.“</p>
+    </div>
+</header>
+
+<main>
+    <section class="search-panel reveal-card">
+        <div class="search-title">
+            <div>
+                <p>Galerie</p>
+                <h2>Archiv durchsuchen</h2>
+            </div>
+        </div>
+
+        <form method="get">
+            <label>
+                Dateiname
+                <input name="search" placeholder="z.B. IMG_1234" value="{{ request.args.get('search','') }}">
+            </label>
+
+            <label>
+                Von Datum
+                <input type="date" name="from" value="{{ request.args.get('from','') }}">
+            </label>
+
+            <label>
+                Bis Datum
+                <input type="date" name="to" value="{{ request.args.get('to','') }}">
+            </label>
+
+            <button type="submit">Suchen</button>
+            <a class="reset" href="/">Zurücksetzen</a>
+        </form>
+
+        <div class="result-line">{{ images|length }} Bild(er) sichtbar</div>
+    </section>
+
+    {% if images %}
+        <section class="gallery">
+            {% for img in images %}
+                <article class="photo-card reveal-card" style="--delay: {{ loop.index0 * 55 }}ms">
+                    <a href="{{ url_for('show_image', image_id=img.id) }}" class="thumb-link">
+                        <div class="thumb-frame">
+                            <img class="thumb" src="{{ url_for('serve_db_thumbnail', image_id=img.id, size=520) }}" alt="{{ img.filename }}">
+                        </div>
+                    </a>
+
+                    <div class="card-content">
+                        <div class="filename">{{ img.filename }}</div>
+
+                        <div class="meta">
+                            <span>ID {{ img.id }} · {{ img.format }} · {{ img.filesize }}</span>
+                            <span>{{ img.dimensions }}</span>
+                            <span>{{ img.date if img.date else 'kein Aufnahmedatum' }}</span>
+                            <span>{{ img.camera }}</span>
+                        </div>
+
+                        <a class="details" href="{{ url_for('show_image', image_id=img.id) }}">Details ansehen</a>
+                    </div>
+                </article>
+            {% endfor %}
+        </section>
+    {% else %}
+        <section class="empty reveal-card">
+            <strong>Keine Bilder gefunden.</strong>
+            <span>Passe deine Suche an oder importiere neue Bilder ins Archiv.</span>
+        </section>
+    {% endif %}
+</main>
+{% endblock %}

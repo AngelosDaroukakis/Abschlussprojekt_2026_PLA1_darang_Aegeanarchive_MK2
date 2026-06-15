@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}{{ image.filename }}{% endblock %}
+{% block body_class %}detail archive-open{% endblock %}
+
+{% block content %}
+<header class="detail-hero">
+    <div class="detail-content">
+        <a class="back" href="/">← Zurück zur Galerie</a>
+        <p class="greek-title small">Αἰγαῖον Ἀρχεῖον</p>
+        <h1>{{ image.filename }}</h1>
+        <p class="slogan">„Wo Erinnerungen wie Marmor für immer bleiben.“</p>
+    </div>
+</header>
+
+<main class="detail-layout">
+    <section class="preview reveal-card">
+        <img src="{{ url_for('serve_db_thumbnail', image_id=image.id, size=1100) }}" alt="{{ image.filename }}">
+        <a class="original-button"
+   href="{{ url_for('serve_db_image', image_id=image.id) }}"
+   target="_blank">
+    Originalbild öffnen
+</a>
+    </section>
+
+    <aside class="data-panel reveal-card">
+        {% for section in sections %}
+            <section class="data-section">
+                <h2>{{ section.title }}</h2>
+
+                {% for key, value in section["items"] %}
+                    <div class="row">
+                        <div class="key">{{ key }}</div>
+                        <div class="value">{{ display_value(value) }}</div>
+                    </div>
+                {% endfor %}
+            </section>
+        {% endfor %}
+    </aside>
+</main>
+{% endblock %}

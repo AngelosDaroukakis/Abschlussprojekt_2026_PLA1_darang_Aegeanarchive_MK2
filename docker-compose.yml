@@ -1,0 +1,55 @@
+name: aegean-archive
+
+services:
+  database:
+    image: mariadb:11.4
+    restart: unless-stopped
+
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "photo_archive"
+      MYSQL_USER: "aegean"
+      MYSQL_PASSWORD: "aegean"
+
+    ports:
+      - "3307:3306"
+
+    volumes:
+      - mariadb-data:/var/lib/mysql
+
+    networks:
+      - aegean-network
+
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+
+    depends_on:
+      database:
+        condition: service_healthy
+
+    environment:
+      DB_HOST: "database"
+      DB_PORT: "3306"
+      DB_NAME: "photo_archive"
+      DB_USER: "aegean"
+      DB_PASSWORD: "aegean"
+
+    ports:
+      - "5000:5000"
+
+    networks:
+      - aegean-network
+
+volumes:
+  mariadb-data:
+
+networks:
+  aegean-network:
+    driver: bridge
