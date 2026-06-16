@@ -41,8 +41,24 @@ services:
       DB_USER: "aegean"
       DB_PASSWORD: "aegean"
 
+    expose:
+      - "5000"
+
+    networks:
+      - aegean-network
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+
+    depends_on:
+      - app
+
     ports:
-      - "5000:5000"
+      - "8080:80"
+
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
 
     networks:
       - aegean-network
