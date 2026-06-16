@@ -1,7 +1,4 @@
 # Abschlussprojekt_2026_PLA1_darang_Aegeanarchive_MK2
-````markdown
-# Aegean Archive
-
 *Ein containerisiertes Fotoarchiv, das Bilder zusammen mit ihren Metadaten direkt in einer MariaDB-Datenbank speichert und über eine Flask-Weboberfläche anzeigt.*
 
 ## Überblick
