@@ -154,26 +154,6 @@ python Metadataextractor.py
 
 Der Metadata-Reader erstellt die benötigten Tabellen und speichert die Bilder zusammen mit den vorhandenen Metadaten in MariaDB.
 
-## Datenbankverbindungen
-
-### Flask-App im Docker-Netzwerk
-
-```text
-Host: database
-Port: 3306
-Datenbank: photo_archive
-Benutzer: aegean
-```
-
-### Metadata-Reader vom Computer
-
-```text
-Host: localhost
-Port: 3307
-Datenbank: photo_archive
-Benutzer: aegean
-```
-
 ## Container verwalten
 
 Container im Hintergrund starten:
