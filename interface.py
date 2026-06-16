@@ -2,7 +2,15 @@ from pathlib import Path
 from io import BytesIO
 import os
 
-from flask import Flask, abort, render_template, request, send_from_directory, Response
+from flask import (
+    Flask,
+    abort,
+    redirect,
+    render_template,
+    request,
+    Response,
+    url_for,
+)
 import mysql.connector
 from PIL import Image, ImageOps
 
@@ -110,6 +118,7 @@ def load_image_details(image_id):
         SELECT
             i.id,
             i.filename,
+            i.description,
             i.filepath,
             i.filesize,
             i.image_width,
@@ -150,6 +159,7 @@ def build_metadata_sections(image):
     image_data = [
         ("ID", image["id"]),
         ("Dateiname", image["filename"]),
+        ("Beschreibung", image["description"]),
         ("Dateigrösse", format_file_size(image["filesize"])),
         ("Bildgrösse", f"{image['image_width']} × {image['image_height']}"),
         ("Format", image["format"]),
@@ -203,46 +213,37 @@ def load_image_blob(image_id):
 
 @app.route("/db-thumbnail/<int:image_id>")
 def serve_db_thumbnail(image_id):
-    max_size = request.args.get("size", default=520, type=int)
-    max_size = max(120, min(max_size, 1200))
+    connection = open_database()
+    cursor = connection.cursor(dictionary=True)
 
-    cache_key = (image_id, max_size)
+    try:
+        cursor.execute("""
+            SELECT
+                thumbnail_data,
+                thumbnail_mime_type
+            FROM images
+            WHERE id = %s
+        """, (image_id,))
 
-    if cache_key in THUMBNAIL_CACHE:
-        thumbnail_bytes, mime_type = THUMBNAIL_CACHE[cache_key]
-        return Response(thumbnail_bytes, mimetype=mime_type)
+        image_record = cursor.fetchone()
 
-    image_record = load_image_blob(image_id)
+    finally:
+        cursor.close()
+        connection.close()
 
-    if not image_record or not image_record.get("image_data"):
+    if not image_record:
         abort(404)
 
-    with Image.open(BytesIO(image_record["image_data"])) as source:
-        source = ImageOps.exif_transpose(source)
-        source.thumbnail((max_size, max_size))
+    if not image_record["thumbnail_data"]:
+        abort(404)
 
-    if source.mode in ("RGBA", "LA"):
-        background = Image.new("RGB", source.size, (255, 255, 255))
-        background.paste(source, mask=source.getchannel("A"))
-        source = background
-    elif source.mode != "RGB":
-        source = source.convert("RGB")
-
-    output = BytesIO()
-    source.save(output, format="JPEG", quality=82, optimize=True)
-
-    if source.mode not in ("RGB", "L"):
-       source = source.convert("RGB")
-
-       output = BytesIO()
-       source.save(output, format="JPEG", quality=82, optimize=True)
-
-    thumbnail_bytes = output.getvalue()
-    mime_type = "image/jpeg"
-
-    THUMBNAIL_CACHE[cache_key] = (thumbnail_bytes, mime_type)
-
-    return Response(thumbnail_bytes, mimetype=mime_type)
+    return Response(
+        image_record["thumbnail_data"],
+        mimetype=(
+            image_record["thumbnail_mime_type"]
+            or "image/jpeg"
+        ),
+    )
 
 
 @app.route("/db-image/<int:image_id>")
@@ -304,6 +305,45 @@ def show_image(image_id):
         display_value=display_value,
     )
 
+@app.post("/image/<int:image_id>/description")
+def save_image_description(image_id):
+    action = request.form.get("action", "save")
+
+    if action == "delete":
+        description = None
+    else:
+        description = request.form.get("description", "").strip()
+
+        if len(description) > 2000:
+            return "Die Beschreibung darf maximal 2000 Zeichen lang sein.", 400
+
+        if not description:
+            description = None
+
+    connection = open_database()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute(
+            """
+            UPDATE images
+            SET description = %s
+            WHERE id = %s
+            """,
+            (description, image_id),
+        )
+
+        connection.commit()
+
+    except mysql.connector.Error:
+        connection.rollback()
+        raise
+
+    finally:
+        cursor.close()
+        connection.close()
+
+    return redirect(url_for("show_image", image_id=image_id))
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

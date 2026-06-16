@@ -2369,3 +2369,64 @@ html.intro-seen body.home .shell{
     transform:translateY(-2px);
     box-shadow:0 12px 24px rgba(4,27,65,0.18);
 }
+.description-section {
+    margin-bottom: 28px;
+    padding-bottom: 26px;
+    border-bottom: 1px solid rgba(11, 61, 145, 0.18);
+}
+
+.description-section h2 {
+    margin-top: 0;
+    margin-bottom: 18px;
+}
+
+.description-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.description-form label {
+    font-weight: 700;
+}
+
+.description-form textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 14px;
+    border: 1px solid rgba(11, 61, 145, 0.3);
+    border-radius: 12px;
+    font: inherit;
+    line-height: 1.5;
+    resize: vertical;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.description-form textarea:focus {
+    outline: 2px solid rgba(212, 175, 55, 0.6);
+    border-color: #0b3d91;
+}
+
+.description-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.description-actions button {
+    padding: 11px 16px;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.description-actions button[value="save"] {
+    background: #0b3d91;
+    color: white;
+}
+
+.description-actions .delete-description {
+    background: #8f2727;
+    color: white;
+}

@@ -3,9 +3,12 @@ from tkinter import Tk, filedialog, messagebox
 import mimetypes
 import os
 import mysql.connector
-from PIL import Image
+from PIL import Image, ImageOps
 from PIL.ExifTags import TAGS, GPSTAGS
+from io import BytesIO
 
+THUMBNAIL_SIZE = 700
+THUMBNAIL_QUALITY = 95
 
 DB_NAME = "photo_archive"
 
@@ -85,7 +88,10 @@ def create_tables():
             compression VARCHAR(50),
             icc_profile BOOLEAN NOT NULL,
             mime_type VARCHAR(100),
-            image_data LONGBLOB
+            image_data LONGBLOB,
+            thumbnail_mime_type VARCHAR(100),
+            thumbnail_data MEDIUMBLOB,
+            description TEXT NULL
         )
     """)
 
@@ -195,8 +201,52 @@ def detect_mime_type(path: Path, image: Image.Image):
 
     return "application/octet-stream"
 
+def create_thumbnail_data(image: Image.Image) -> bytes:
+    """Erstellt ein kleines JPEG-Thumbnail und gibt es als Bytes zurück."""
 
-def insert_image_record(cursor, source_path: Path, image: Image.Image, image_data: bytes):
+    thumbnail = ImageOps.exif_transpose(image).copy()
+
+    thumbnail.thumbnail(
+        (THUMBNAIL_SIZE, THUMBNAIL_SIZE),
+        Image.Resampling.LANCZOS,
+    )
+
+    if thumbnail.mode in ("RGBA", "LA"):
+        background = Image.new(
+            "RGB",
+            thumbnail.size,
+            (255, 255, 255),
+        )
+
+        background.paste(
+            thumbnail,
+            mask=thumbnail.getchannel("A"),
+        )
+
+        thumbnail = background
+
+    elif thumbnail.mode != "RGB":
+        thumbnail = thumbnail.convert("RGB")
+
+    output = BytesIO()
+
+    thumbnail.save(
+        output,
+        format="JPEG",
+        quality=THUMBNAIL_QUALITY,
+        optimize=True,
+    )
+
+    return output.getvalue()
+
+def insert_image_record(
+    cursor,
+    source_path: Path,
+    image: Image.Image,
+    image_data: bytes,
+    thumbnail_data: bytes,
+):
+
     dpi = image.info.get("dpi")
     dpi_x = sql_safe(dpi[0]) if dpi else None
     dpi_y = sql_safe(dpi[1]) if dpi else None
@@ -218,25 +268,27 @@ def insert_image_record(cursor, source_path: Path, image: Image.Image, image_dat
             animated, frames,
             dpi_x, dpi_y,
             compression, icc_profile,
-            mime_type, image_data
+            mime_type, image_data, thumbnail_mime_type, thumbnail_data
         )
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
     """, (
-        source_path.name,
-        str(source_path),
-        int(len(image_data)),
-        int(image.width),
-        int(image.height),
-        str(image.format),
-        str(image.mode),
-        bool(animated),
-        int(frames),
-        dpi_x,
-        dpi_y,
-        compression,
-        icc_profile,
-        mime_type,
-        image_data,
+       source_path.name,
+    str(source_path),
+    len(image_data),
+    image.width,
+    image.height,
+    image.format,
+    image.mode,
+    bool(getattr(image, "is_animated", False)),
+    int(getattr(image, "n_frames", 1)),
+    dpi_x,
+    dpi_y,
+    compression,
+    icc_profile,
+    mime_type,
+    image_data,
+    "image/jpeg",
+    thumbnail_data,
     ))
 
     return cursor.lastrowid
@@ -320,7 +372,17 @@ def store_image_and_metadata(path: Path):
     try:
         with Image.open(path) as image:
             exif = extract_full_exif(image)
-            image_id = insert_image_record(cursor, path, image, image_data)
+
+            thumbnail_data = create_thumbnail_data(image)
+
+            image_id = insert_image_record(
+                cursor,
+                path,
+                image,
+                image_data,
+                thumbnail_data,
+            )
+
             insert_exif_record(cursor, image_id, exif)
             insert_gps_record(cursor, image_id, exif)
 

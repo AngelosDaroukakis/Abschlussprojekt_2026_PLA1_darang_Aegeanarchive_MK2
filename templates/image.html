@@ -15,7 +15,11 @@
 
 <main class="detail-layout">
     <section class="preview reveal-card">
-        <img src="{{ url_for('serve_db_thumbnail', image_id=image.id, size=1100) }}" alt="{{ image.filename }}">
+        <img
+    class="thumb"
+    src="{{ url_for('serve_db_thumbnail', image_id=image.id) }}"
+    alt="{{ image.filename }}"
+>
         <a class="original-button"
    href="{{ url_for('serve_db_image', image_id=image.id) }}"
    target="_blank">
@@ -24,6 +28,45 @@
     </section>
 
     <aside class="data-panel reveal-card">
+        <section class="description-section">
+    <h2>Περιγραφή · Beschreibung</h2>
+
+    <form
+        method="post"
+        action="{{ url_for('save_image_description', image_id=image.id) }}"
+        class="description-form"
+    >
+        <label for="description">
+            Beschreibung für dieses Bild
+        </label>
+
+        <textarea
+            id="description"
+            name="description"
+            maxlength="2000"
+            rows="7"
+            placeholder="Zum Beispiel: Ferien in Athen im Sommer 2025."
+        >{{ image.description or "" }}</textarea>
+
+        <div class="description-actions">
+            <button type="submit" name="action" value="save">
+                Beschreibung speichern
+            </button>
+
+            {% if image.description %}
+                <button
+                    type="submit"
+                    name="action"
+                    value="delete"
+                    class="delete-description"
+                    onclick="return confirm('Beschreibung wirklich löschen?')"
+                >
+                    Beschreibung löschen
+                </button>
+            {% endif %}
+        </div>
+    </form>
+</section>
         {% for section in sections %}
             <section class="data-section">
                 <h2>{{ section.title }}</h2>
