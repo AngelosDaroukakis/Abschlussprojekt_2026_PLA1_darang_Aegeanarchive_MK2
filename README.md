@@ -325,6 +325,3 @@ Verwendete Technologien und externe Projekte:
 * Docker
 * Docker Compose
 * NGINX
-
-```
-```
