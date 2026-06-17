@@ -8,7 +8,7 @@ from PIL.ExifTags import TAGS, GPSTAGS
 from io import BytesIO
 
 THUMBNAIL_SIZE = 700
-THUMBNAIL_QUALITY = 95
+THUMBNAIL_QUALITY = 90
 
 DB_NAME = "photo_archive"
 

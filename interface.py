@@ -19,6 +19,7 @@ DB_NAME = "photo_archive"
 IMAGE_FOLDER = Path("photo_archive")
 
 app = Flask(__name__)
+INSTANCE_NAME = os.getenv("INSTANCE_NAME", "unknown")
 
 THUMBNAIL_CACHE = {}
 
@@ -345,5 +346,29 @@ def save_image_description(image_id):
 
     return redirect(url_for("show_image", image_id=image_id))
 
+@app.get("/health")
+def health_check():
+    connection = open_database()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute("SELECT 1")
+        cursor.fetchone()
+
+    finally:
+        cursor.close()
+        connection.close()
+
+    return {
+        "status": "ok",
+        "instance": INSTANCE_NAME,
+    }
+
+@app.get("/instance")
+def show_instance():
+    return {
+        "instance": INSTANCE_NAME,
+    }
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)

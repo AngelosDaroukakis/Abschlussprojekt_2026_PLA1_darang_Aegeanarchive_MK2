@@ -1,34 +1,107 @@
 <!doctype html>
-<html lang="de">
+<html lang="de" class="no-js">
 <head>
     <script>
+        document.documentElement.classList.remove("no-js");
+        document.documentElement.classList.add("js");
+
         try {
-            if (localStorage.getItem("aegeanIntroSeen") === "true") {
-                document.documentElement.classList.add("intro-seen");
-            }
-        } catch (error) {}
+            const params = new URLSearchParams(window.location.search);
+            const filtered = params.has("search") || params.has("from") || params.has("to");
+            const introSeen = localStorage.getItem("aegeanIntroSeen") === "true";
+            if (filtered || introSeen) document.documentElement.classList.add("intro-seen");
+        } catch (error) {
+            document.documentElement.classList.add("intro-seen");
+        }
     </script>
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f8f6ef">
+    <meta name="color-scheme" content="light">
+    <meta name="description" content="Aegean Archive – Erinnerungen im Licht der Ägäis.">
+
     <title>{% block title %}Aegean Archive{% endblock %}</title>
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='%23004eb8'/><circle cx='32' cy='32' r='19' fill='none' stroke='%23fffaf0' stroke-width='2'/><text x='32' y='42' text-anchor='middle' font-size='30' fill='%23fffaf0' font-family='serif'>Α</text></svg>">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/aegean.css') }}">
 </head>
 <body class="{% block body_class %}{% endblock %}">
+    <a class="skip-link" href="#main-content">Direkt zum Inhalt</a>
+
+    <div class="page-transition" aria-hidden="true">
+        <div class="page-transition-blue"></div>
+        <div class="page-transition-marble"></div>
+        <div class="page-transition-mark">Α</div>
+    </div>
+
+    <div class="cursor-orbit" aria-hidden="true" data-cursor-orbit></div>
+    <div class="pointer-sun" aria-hidden="true"></div>
+    <div class="page-marble" aria-hidden="true"></div>
+    <div class="page-light" aria-hidden="true"></div>
+    <div class="page-noise" aria-hidden="true"></div>
+
     {% block intro %}{% endblock %}
 
-    <div class="app">
-        <div class="frame">
-            <div class="flag-line"></div>
-            <div class="meander-line"></div>
+    <div class="site-shell">
+        <header class="site-header" data-site-header>
+            <div class="site-header-inner">
+                <a class="brand" href="{{ url_for('index') }}" data-transition-link>
+                    <span class="brand-mark" aria-hidden="true">
+                        <span class="brand-mark-ring"></span>
+                        <span class="brand-mark-sun"></span>
+                        <span class="brand-mark-letter">Α</span>
+                    </span>
+                    <span class="brand-text">
+                        <strong>Aegean Archive</strong>
+                        <small>Αἰγαῖον Ἀρχεῖον</small>
+                    </span>
+                </a>
 
+                <nav class="site-nav" aria-label="Hauptnavigation">
+                    <a href="{{ url_for('index') }}#collection" data-nav-target="collection">Sammlung</a>
+                    <a href="{{ url_for('index') }}#search" data-nav-target="search">Suche</a>
+                </nav>
+
+            </div>
+        </header>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <section class="flash-region" aria-label="Meldungen">
+                {% for message in messages %}
+                <div class="flash-message" role="status">
+                    <span aria-hidden="true">✓</span>
+                    <span>{{ message }}</span>
+                </div>
+                {% endfor %}
+            </section>
+            {% endif %}
+        {% endwith %}
+
+        <main class="site-main" id="main-content">
             {% block content %}{% endblock %}
+        </main>
 
-            <footer>
-                <span>Αἰγαῖον Ἀρχεῖον</span>
-                <span>Aegean Archive</span>
-            </footer>
-        </div>
+        <footer class="site-footer">
+            <div class="footer-key" aria-hidden="true"></div>
+            <div class="footer-inner">
+                <div class="footer-brand">
+                    <span>Α</span>
+                    <strong>Aegean Archive</strong>
+                </div>
+            </div>
+        </footer>
     </div>
+
+    <nav class="mobile-dock" aria-label="Mobile Navigation">
+        <a href="{{ url_for('index') }}#collection"><span aria-hidden="true">▦</span><small>Sammlung</small></a>
+        <a href="{{ url_for('index') }}#search"><span aria-hidden="true">⌕</span><small>Suche</small></a>
+        <button type="button" data-back-to-top-mobile><span aria-hidden="true">↑</span><small>Oben</small></button>
+    </nav>
+
+    <button class="back-to-top" type="button" aria-label="Nach oben" data-back-to-top>↑</button>
+    <div class="ui-toast" role="status" aria-live="polite" data-ui-toast></div>
 
     <script src="{{ url_for('static', filename='js/aegean.js') }}"></script>
 </body>

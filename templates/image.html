@@ -1,84 +1,117 @@
 {% extends "base.html" %}
 
-{% block title %}{{ image.filename }}{% endblock %}
+{% block title %}{{ image.filename }} · Aegean Archive{% endblock %}
 {% block body_class %}detail archive-open{% endblock %}
 
 {% block content %}
-<header class="detail-hero">
-    <div class="detail-content">
-        <a class="back" href="/">← Zurück zur Galerie</a>
-        <p class="greek-title small">Αἰγαῖον Ἀρχεῖον</p>
-        <h1>{{ image.filename }}</h1>
-        <p class="slogan">„Wo Erinnerungen wie Marmor für immer bleiben.“</p>
+<section class="detail-hero">
+    <div class="detail-breadcrumb reveal">
+        <a href="{{ url_for('index') }}#collection" data-transition-link><span aria-hidden="true">←</span> Zurück zur Sammlung</a>
+        <span>Bild {{ "%04d"|format(image.id) }}</span>
     </div>
-</header>
 
-<main class="detail-layout">
-    <section class="preview reveal-card">
-        <img
-    class="thumb"
-    src="{{ url_for('serve_db_thumbnail', image_id=image.id) }}"
-    alt="{{ image.filename }}"
->
-        <a class="original-button"
-   href="{{ url_for('serve_db_image', image_id=image.id) }}"
-   target="_blank">
-    Originalbild öffnen
-</a>
-    </section>
-
-    <aside class="data-panel reveal-card">
-        <section class="description-section">
-    <h2>Περιγραφή · Beschreibung</h2>
-
-    <form
-        method="post"
-        action="{{ url_for('save_image_description', image_id=image.id) }}"
-        class="description-form"
-    >
-        <label for="description">
-            Beschreibung für dieses Bild
-        </label>
-
-        <textarea
-            id="description"
-            name="description"
-            maxlength="2000"
-            rows="7"
-            placeholder="Zum Beispiel: Ferien in Athen im Sommer 2025."
-        >{{ image.description or "" }}</textarea>
-
-        <div class="description-actions">
-            <button type="submit" name="action" value="save">
-                Beschreibung speichern
-            </button>
-
-            {% if image.description %}
-                <button
-                    type="submit"
-                    name="action"
-                    value="delete"
-                    class="delete-description"
-                    onclick="return confirm('Beschreibung wirklich löschen?')"
-                >
-                    Beschreibung löschen
-                </button>
-            {% endif %}
+    <div class="detail-heading reveal">
+        <div>
+            <p class="eyebrow">Αρχείο</p>
+            <h1>{{ image.filename }}</h1>
         </div>
-    </form>
+        <div class="detail-heading-actions">
+            <button class="button button-outline magnetic" type="button" data-focus-open data-focus-src="{{ url_for('serve_db_image', image_id=image.id) }}" data-magnetic>
+                <span>Vollbild</span><span aria-hidden="true">⛶</span>
+            </button>
+            <a class="button button-primary magnetic" href="{{ url_for('serve_db_image', image_id=image.id) }}" target="_blank" rel="noopener" data-magnetic>
+                <span>Original öffnen</span><span aria-hidden="true">↗</span>
+            </a>
+        </div>
+    </div>
 </section>
-        {% for section in sections %}
-            <section class="data-section">
-                <h2>{{ section.title }}</h2>
 
-                {% for key, value in section["items"] %}
-                    <div class="row">
-                        <div class="key">{{ key }}</div>
-                        <div class="value">{{ display_value(value) }}</div>
-                    </div>
+<section class="detail-layout">
+    <div class="detail-visual reveal-card">
+        <div class="detail-marble-frame" data-tilt>
+            <span class="frame-corner frame-corner-tl" aria-hidden="true"></span>
+            <span class="frame-corner frame-corner-tr" aria-hidden="true"></span>
+            <span class="frame-corner frame-corner-bl" aria-hidden="true"></span>
+            <span class="frame-corner frame-corner-br" aria-hidden="true"></span>
+
+            <div class="detail-image-shell">
+                <div class="image-loader" aria-hidden="true"><span></span></div>
+                <img src="{{ url_for('serve_db_thumbnail', image_id=image.id, size=1100) }}" alt="{{ image.filename }}" decoding="async">
+                <span class="image-shine" aria-hidden="true"></span>
+                <button class="detail-focus-trigger" type="button" data-focus-open aria-label="Bild im Vollbild öffnen">⛶</button>
+            </div>
+        </div>
+
+        <div class="detail-under-image">
+            <span>Bild {{ "%04d"|format(image.id) }}</span>
+        </div>
+    </div>
+
+    <aside class="detail-sidebar">
+        <section class="description-panel reveal-card" aria-labelledby="description-title">
+            <header class="panel-heading">
+                <p class="eyebrow">Σημείωση</p>
+                <h2 id="description-title">Beschreibung</h2>
+            </header>
+
+            <form class="description-form" method="post" action="{{ url_for('save_image_description', image_id=image.id) }}">
+                <label class="sr-only" for="description">Beschreibung für dieses Bild</label>
+                <div class="textarea-shell">
+                    <textarea id="description" name="description" maxlength="2000" rows="8" placeholder="Wo wurde das Bild aufgenommen? Was möchtest du dazu festhalten?">{{ image.description or "" }}</textarea>
+                    <span class="character-count" data-character-count>0 / 2000</span>
+                </div>
+
+                <div class="description-actions">
+                    <button class="button button-primary magnetic" type="submit" name="action" value="save" data-magnetic><span>Speichern</span><span aria-hidden="true">→</span></button>
+                    {% if image.description %}
+                    <button class="description-delete" type="submit" name="action" value="delete" data-confirm-delete>Löschen</button>
+                    {% endif %}
+                </div>
+            </form>
+        </section>
+
+        <section class="metadata-section reveal-card" aria-labelledby="metadata-title">
+            <header class="panel-heading">
+                <p class="eyebrow">Στοιχεία</p>
+                <h2 id="metadata-title">Bilddaten</h2>
+            </header>
+
+            <div class="metadata-groups">
+                {% for section in sections %}
+                <details class="metadata-group" {% if loop.first %}open{% endif %}>
+                    <summary>
+                        <span>{{ section.title }}</span>
+                        <span aria-hidden="true">+</span>
+                    </summary>
+                    <dl class="metadata-list">
+                        {% for key, value in section["items"] %}
+                        <div class="metadata-row">
+                            <dt>{{ key }}</dt>
+                            <dd>{{ display_value(value) }}</dd>
+                        </div>
+                        {% endfor %}
+                    </dl>
+                </details>
                 {% endfor %}
-            </section>
-        {% endfor %}
+            </div>
+        </section>
     </aside>
-</main>
+</section>
+
+<section class="detail-closing reveal">
+    <a href="{{ url_for('index') }}#collection" data-transition-link><span aria-hidden="true">←</span> Zur Sammlung</a>
+</section>
+
+<div class="focus-viewer" aria-hidden="true" data-focus-viewer>
+    <div class="focus-viewer-backdrop" data-focus-close></div>
+    <div class="focus-viewer-toolbar">
+        <strong>{{ image.filename }}</strong>
+        <button type="button" data-focus-close aria-label="Vollbild schliessen">×</button>
+    </div>
+    <div class="focus-viewer-stage">
+        <div class="focus-viewer-loader" aria-hidden="true"><span></span></div>
+        <img alt="{{ image.filename }} in voller Ansicht" data-focus-image>
+    </div>
+    <div class="focus-viewer-footer"><span>ESC zum Schliessen</span></div>
+</div>
 {% endblock %}

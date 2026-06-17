@@ -4,128 +4,231 @@
 {% block body_class %}home locked{% endblock %}
 
 {% block intro %}
-<section class="intro" id="intro">
-    <canvas id="particles"></canvas>
-
-    <div class="blue-hour"></div>
-    <div class="sea sea-one"></div>
-    <div class="sea sea-two"></div>
-    <div class="sea sea-three"></div>
-
-    <div class="marble-door door-left"></div>
-    <div class="marble-door door-right"></div>
-    <div class="portal"></div>
-    <div class="shock"></div>
-
-    <div class="glyphs">
-        <span>Α</span><span>Ω</span><span>Φ</span><span>Σ</span><span>Λ</span><span>Θ</span><span>Ξ</span><span>Δ</span>
+<section class="intro" id="intro" aria-label="Aegean Archive Einführung">
+    <div class="intro-sea" aria-hidden="true">
+        <div class="intro-sun"></div>
+        <div class="intro-horizon"></div>
+        <div class="intro-island intro-island-one"></div>
+        <div class="intro-island intro-island-two"></div>
+        <div class="intro-water-lines"></div>
     </div>
 
-    <div class="intro-card">
-        <div class="seal-stage">
-            <div class="sun"></div>
+    <div class="intro-door intro-door-left" aria-hidden="true">
+        <div class="intro-door-marble"></div>
+        <div class="intro-door-vein vein-a"></div>
+        <div class="intro-door-vein vein-b"></div>
+        <div class="intro-door-edge"></div>
+    </div>
 
-            <div class="hellenic-seal">
-                <div class="seal-ring">
-                    <span>Α</span>
-                    <span>Ω</span>
-                </div>
-                <div class="seal-mark">
-                    <i></i><i></i><i></i>
-                </div>
-            </div>
+    <div class="intro-door intro-door-right" aria-hidden="true">
+        <div class="intro-door-marble"></div>
+        <div class="intro-door-vein vein-a"></div>
+        <div class="intro-door-vein vein-b"></div>
+        <div class="intro-door-edge"></div>
+    </div>
+
+    <svg class="intro-meander" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0,60 H96 V18 H192 V102 H288 V18 H384 V102 H480 V18 H576 V102 H672 V18 H768 V102 H864 V18 H960 V102 H1056 V60 H1200" />
+    </svg>
+
+    <div class="intro-content" data-parallax-root>
+        <div class="intro-emblem" data-parallax="0.35" aria-hidden="true">
+            <span class="intro-emblem-ring ring-one"></span>
+            <span class="intro-emblem-ring ring-two"></span>
+            <span class="intro-emblem-rays"></span>
+            <span class="intro-emblem-letter">Α</span>
         </div>
 
-        <p class="ancient-title">Αἰγαῖον Ἀρχεῖον</p>
-        <h1>Aegean Archive</h1>
-        <p class="intro-slogan">„Wo Erinnerungen wie Marmor für immer bleiben.“</p>
+        <p class="intro-greek">Αἰγαῖον Ἀρχεῖον</p>
+        <h1>Aegean <span>Archive</span></h1>
+        <p class="intro-line">Erinnerungen im Licht der Ägäis.</p>
 
-        <button class="enter" type="button">Archiv betreten</button>
-        <p class="hint">Klick öffnet das Marmortor</p>
+        <button class="enter-button magnetic" type="button" data-magnetic>
+            <span>Archiv betreten</span>
+            <span aria-hidden="true">↗</span>
+        </button>
+
+        <button class="intro-skip" type="button" data-intro-skip>Überspringen</button>
     </div>
+
+    <span class="intro-word intro-word-left" aria-hidden="true">ΜΝΗΜΗ</span>
+    <span class="intro-word intro-word-right" aria-hidden="true">ΘΑΛΑΣΣΑ</span>
 </section>
 {% endblock %}
 
 {% block content %}
-<header class="hero">
-    <div class="hero-sun"></div>
-    <div class="cycladic-shapes">
-        <span class="dome"></span>
-        <span class="wall wall-one"></span>
-        <span class="wall wall-two"></span>
-        <span class="arch"></span>
+{% set featured = images|first if images else none %}
+<section class="hero" aria-labelledby="hero-title">
+    <div class="hero-architecture" aria-hidden="true">
+        <span class="hero-column hero-column-one"></span>
+        <span class="hero-column hero-column-two"></span>
+        <span class="hero-arch"></span>
+        <span class="hero-sun-disc"></span>
     </div>
 
-    <div class="hero-content">
-        <p class="kicker">Hellenic Photo Archive</p>
-        <p class="greek-title">Αἰγαῖον Ἀρχεῖον</p>
-        <h1>Aegean Archive</h1>
-        <p class="slogan">„Wo Erinnerungen wie Marmor für immer bleiben.“</p>
-    </div>
-</header>
+    <div class="hero-grid" data-parallax-root>
+        <div class="hero-copy reveal">
+            <p class="eyebrow">Αἰγαῖον Ἀρχεῖον</p>
+            <h1 id="hero-title">
+                Deine Bilder.
+                <span>Deine Geschichte.</span>
+            </h1>
+            <p class="hero-lead">Ein persönliches Fotoarchiv aus weissem Marmor, Ägäisblau und Erinnerungen.</p>
 
-<main>
-    <section class="search-panel reveal-card">
-        <div class="search-title">
-            <div>
-                <p>Galerie</p>
-                <h2>Archiv durchsuchen</h2>
+            <div class="hero-actions">
+                <a class="button button-primary magnetic" href="#collection" data-magnetic>
+                    <span>Sammlung ansehen</span>
+                    <span aria-hidden="true">↘</span>
+                </a>
+                <a class="text-link" href="#search">Bilder suchen</a>
+            </div>
+
+            <div class="hero-count">
+                <strong data-count-up="{{ images|length }}">{{ images|length }}</strong>
+                <span>Bild{% if images|length != 1 %}er{% endif %} in dieser Ansicht</span>
             </div>
         </div>
 
-        <form method="get">
-            <label>
-                Dateiname
-                <input name="search" placeholder="z.B. IMG_1234" value="{{ request.args.get('search','') }}">
-            </label>
+        <div class="hero-gallery reveal-card" data-parallax="0.12">
+            <div class="hero-blue-plane" aria-hidden="true"></div>
+            <div class="hero-marble-plane" aria-hidden="true"></div>
 
-            <label>
-                Von Datum
-                <input type="date" name="from" value="{{ request.args.get('from','') }}">
-            </label>
+            {% if featured %}
+            <a class="hero-frame hero-frame-main" href="{{ url_for('show_image', image_id=featured.id) }}" data-transition-link data-tilt>
+                <div class="hero-frame-image">
+                    <img src="{{ url_for('serve_db_thumbnail', image_id=featured.id) }}" alt="{{ featured.filename }}" decoding="async">
+                    <span class="image-shine" aria-hidden="true"></span>
+                </div>
+                <div class="hero-frame-caption">
+                    <strong>{{ featured.filename }}</strong>
+                    <span>{{ featured.date if featured.date else 'Ohne Datum' }}</span>
+                </div>
+            </a>
 
-            <label>
-                Bis Datum
-                <input type="date" name="to" value="{{ request.args.get('to','') }}">
-            </label>
+            {% if images|length > 1 %}
+            <a class="hero-frame hero-frame-small hero-frame-top" href="{{ url_for('show_image', image_id=images[1].id) }}" data-transition-link aria-label="{{ images[1].filename }} öffnen">
+                <img src="{{ url_for('serve_db_thumbnail', image_id=images[1].id) }}" alt="" decoding="async">
+            </a>
+            {% endif %}
 
-            <button type="submit">Suchen</button>
-            <a class="reset" href="/">Zurücksetzen</a>
-        </form>
+            {% if images|length > 2 %}
+            <a class="hero-frame hero-frame-small hero-frame-bottom" href="{{ url_for('show_image', image_id=images[2].id) }}" data-transition-link aria-label="{{ images[2].filename }} öffnen">
+                <img src="{{ url_for('serve_db_thumbnail', image_id=images[2].id) }}" alt="" decoding="async">
+            </a>
+            {% endif %}
+            {% else %}
+            <div class="hero-empty-art" aria-hidden="true">
+                <span class="hero-empty-sun"></span>
+                <span class="hero-empty-sea"></span>
+                <span class="hero-empty-island"></span>
+                <strong>Α</strong>
+            </div>
+            {% endif %}
 
-        <div class="result-line">{{ images|length }} Bild(er) sichtbar</div>
-    </section>
+            <div class="hero-gallery-stamp" aria-hidden="true">HELLAS</div>
+        </div>
+    </div>
+
+    <div class="hero-wave" aria-hidden="true">
+        <svg viewBox="0 0 1600 180" preserveAspectRatio="none">
+            <path d="M-40 110 C160 20 280 170 480 90 S820 30 1030 110 S1390 170 1640 70" />
+            <path d="M-40 138 C190 56 320 194 540 122 S890 50 1110 132 S1430 190 1640 112" />
+        </svg>
+    </div>
+</section>
+
+<section class="search-section reveal" id="search" aria-labelledby="search-title">
+    <div class="section-mark" aria-hidden="true">⌕</div>
+    <header class="section-heading">
+        <div>
+            <p class="eyebrow">Αναζήτηση</p>
+            <h2 id="search-title">Finde einen Moment.</h2>
+        </div>
+        <p>Suche nach einem Dateinamen oder grenze die Bilder über das Datum ein.</p>
+    </header>
+
+    <form class="search-form" method="get" action="{{ url_for('index') }}">
+        <label class="search-field search-field-wide" for="search-input">
+            <span>Dateiname</span>
+            <span class="input-shell">
+                <span class="input-icon" aria-hidden="true">⌕</span>
+                <input id="search-input" name="search" type="search" value="{{ request.args.get('search', '') }}" placeholder="Athen, Santorini, P1090 …" autocomplete="off">
+                <kbd>/</kbd>
+            </span>
+        </label>
+
+        <label class="search-field" for="from-date">
+            <span>Von</span>
+            <span class="input-shell"><input id="from-date" name="from" type="date" value="{{ request.args.get('from', '') }}"></span>
+        </label>
+
+        <label class="search-field" for="to-date">
+            <span>Bis</span>
+            <span class="input-shell"><input id="to-date" name="to" type="date" value="{{ request.args.get('to', '') }}"></span>
+        </label>
+
+        <div class="search-actions">
+            <button class="button button-primary magnetic" type="submit" data-magnetic><span>Suchen</span><span aria-hidden="true">→</span></button>
+            <a class="search-reset" href="{{ url_for('index') }}">Zurücksetzen</a>
+        </div>
+    </form>
+</section>
+
+<section class="collection" id="collection" aria-labelledby="collection-title">
+    <header class="collection-heading reveal">
+        <div>
+            <p class="eyebrow">Συλλογή</p>
+            <h2 id="collection-title">Die Sammlung</h2>
+        </div>
+
+        <div class="collection-controls">
+            <div class="view-switcher" role="group" aria-label="Galerieansicht">
+                <button class="is-active" type="button" data-gallery-view="mosaic" aria-pressed="true"><span aria-hidden="true">▦</span>Mosaik</button>
+                <button type="button" data-gallery-view="grid" aria-pressed="false"><span aria-hidden="true">▥</span>Raster</button>
+            </div>
+            <span class="collection-total">{{ images|length }} Bild{% if images|length != 1 %}er{% endif %}</span>
+        </div>
+    </header>
 
     {% if images %}
-        <section class="gallery">
-            {% for img in images %}
-                <article class="photo-card reveal-card" style="--delay: {{ loop.index0 * 55 }}ms">
-                    <a href="{{ url_for('show_image', image_id=img.id) }}" class="thumb-link">
-                        <div class="thumb-frame">
-                            <img class="thumb" src="{{ url_for('serve_db_thumbnail', image_id=img.id, size=520) }}" alt="{{ img.filename }}">
-                        </div>
-                    </a>
-
-                    <div class="card-content">
-                        <div class="filename">{{ img.filename }}</div>
-
-                        <div class="meta">
-                            <span>ID {{ img.id }} · {{ img.format }} · {{ img.filesize }}</span>
-                            <span>{{ img.dimensions }}</span>
-                            <span>{{ img.date if img.date else 'kein Aufnahmedatum' }}</span>
-                            <span>{{ img.camera }}</span>
-                        </div>
-
-                        <a class="details" href="{{ url_for('show_image', image_id=img.id) }}">Details ansehen</a>
+    <div class="gallery-grid" data-gallery data-view="mosaic">
+        {% for img in images %}
+        <article class="gallery-item gallery-item-{{ loop.index0 % 9 }} reveal-card" data-gallery-item>
+            <a class="gallery-link" href="{{ url_for('show_image', image_id=img.id) }}" data-transition-link aria-label="{{ img.filename }} öffnen">
+                <figure class="gallery-figure" data-tilt>
+                    <div class="gallery-image-shell">
+                        <div class="image-loader" aria-hidden="true"><span></span></div>
+                        <img src="{{ url_for('serve_db_thumbnail', image_id=img.id) }}" alt="{{ img.filename }}" loading="lazy" decoding="async">
+                        <span class="image-shine" aria-hidden="true"></span>
+                        <span class="gallery-blue-edge" aria-hidden="true"></span>
                     </div>
-                </article>
-            {% endfor %}
-        </section>
+
+                    <figcaption>
+                        <div>
+                            <strong>{{ img.filename }}</strong>
+                            <span>{{ img.date if img.date else 'Ohne Datum' }}</span>
+                        </div>
+                        <span class="gallery-open" aria-hidden="true">↗</span>
+                    </figcaption>
+                </figure>
+            </a>
+        </article>
+        {% endfor %}
+    </div>
     {% else %}
-        <section class="empty reveal-card">
-            <strong>Keine Bilder gefunden.</strong>
-            <span>Passe deine Suche an oder importiere neue Bilder ins Archiv.</span>
-        </section>
+    <div class="empty-state reveal-card">
+        <div class="empty-symbol" aria-hidden="true">Α</div>
+        <p class="eyebrow">Κενό Αρχείο</p>
+        <h3>Keine Bilder gefunden.</h3>
+        <p>Setze die Filter zurück und versuche es erneut.</p>
+        <a class="button button-primary" href="{{ url_for('index') }}">Alle Bilder anzeigen</a>
+    </div>
     {% endif %}
-</main>
+</section>
+
+<section class="closing-scene reveal" aria-label="Abschluss">
+    <div class="closing-sun" aria-hidden="true"></div>
+    <div class="closing-islands" aria-hidden="true"></div>
+    <h2>Erinnerungen, die bleiben.</h2>
+</section>
 {% endblock %}

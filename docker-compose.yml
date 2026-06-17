@@ -22,11 +22,12 @@ services:
 
     healthcheck:
       test: ["CMD-SHELL", "mariadb-admin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD} || exit 1"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 20
+      start_period: 10s
 
-  app:
+  app1:
     build: .
     restart: unless-stopped
 
@@ -35,24 +36,49 @@ services:
         condition: service_healthy
 
     environment:
+      INSTANCE_NAME: "app1"
       DB_HOST: "database"
       DB_PORT: "3306"
       DB_NAME: "photo_archive"
       DB_USER: "aegean"
       DB_PASSWORD: "aegean"
+      PYTHONUNBUFFERED: "1"
 
-    expose:
-      - "5000"
+    ports:
+      - "5001:5000"
 
     networks:
       - aegean-network
 
+  app2:
+    build: .
+    restart: unless-stopped
+
+    depends_on:
+     database:
+        condition: service_healthy
+
+    environment:
+      INSTANCE_NAME: "app2"
+      DB_HOST: "database"
+      DB_PORT: "3306"
+      DB_NAME: "photo_archive"
+      DB_USER: "aegean"
+      DB_PASSWORD: "aegean"
+      PYTHONUNBUFFERED: "1"
+
+    ports:
+      - "5002:5000"
+
+    networks:
+      - aegean-network
   nginx:
     image: nginx:alpine
     restart: unless-stopped
 
     depends_on:
-      - app
+      - app1
+      - app2
 
     ports:
       - "8080:80"
