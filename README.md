@@ -255,13 +255,8 @@ Für die Galerie werden kleinere Vorschaubilder verwendet. Dadurch müssen nicht
 
 ## Geplante Erweiterungen
 
-- Beschreibungen zu Bildern hinzufügen
 - Bilder in Alben gruppieren
 - Alben wie **Ferien Athen 2025** erstellen
-- Mehrere Flask-Instanzen verwenden
-- NGINX als Load Balancer einsetzen
-- Weitere Tests durchführen
-- Interface weiter verbessern
 
 ## Beitrag leisten
 
