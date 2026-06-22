@@ -260,7 +260,7 @@ Für die Galerie werden kleinere Vorschaubilder verwendet. Dadurch müssen nicht
 
 ## Beitrag leisten
 
-Da dieses Projekt ein Schul- und Abschlussprojekt ist, werden Änderungen kontrolliert gemacht.
+Da dieses Projekt ein Abschlussprojekt ist, werden Änderungen kontrolliert gemacht.
 
 Wer etwas beitragen möchte:
 
