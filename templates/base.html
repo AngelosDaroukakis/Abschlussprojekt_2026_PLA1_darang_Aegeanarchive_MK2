@@ -61,6 +61,7 @@
                 <nav class="site-nav" aria-label="Hauptnavigation">
                     <a href="{{ url_for('index') }}#collection" data-nav-target="collection">Sammlung</a>
                     <a href="{{ url_for('index') }}#search" data-nav-target="search">Suche</a>
+                    <a href="{{ url_for('albums') }}" data-nav-target="albums">Alben</a>
                 </nav>
 
             </div>
@@ -97,6 +98,7 @@
     <nav class="mobile-dock" aria-label="Mobile Navigation">
         <a href="{{ url_for('index') }}#collection"><span aria-hidden="true">▦</span><small>Sammlung</small></a>
         <a href="{{ url_for('index') }}#search"><span aria-hidden="true">⌕</span><small>Suche</small></a>
+        <a href="{{ url_for('albums') }}"><span aria-hidden="true">▣</span><small>Alben</small></a>
         <button type="button" data-back-to-top-mobile><span aria-hidden="true">↑</span><small>Oben</small></button>
     </nav>
 

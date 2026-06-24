@@ -2278,3 +2278,147 @@ body.is-transitioning .page-transition-mark { animation: transition-mark .45s ea
     .cursor-orbit,
     .pointer-sun { display: none; }
 }
+
+.album-page {
+    width: min(1180px, calc(100% - 40px));
+    margin: 80px auto;
+}
+
+.album-create-card {
+    display: flex;
+    align-items: end;
+    gap: 18px;
+    margin: 34px 0 42px;
+    padding: 26px;
+    border: 1px solid rgba(0, 78, 184, 0.18);
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: 0 24px 70px rgba(16, 46, 92, 0.12);
+}
+
+.album-create-card label {
+    flex: 1;
+    display: grid;
+    gap: 10px;
+}
+
+.album-create-card label span {
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--aegean-blue, #0b4fa8);
+}
+
+.album-create-card input {
+    width: 100%;
+    padding: 15px 17px;
+    border: 1px solid rgba(0, 78, 184, 0.22);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.92);
+    color: inherit;
+    font: inherit;
+}
+
+.album-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+}
+
+.album-card {
+    display: block;
+    min-height: 190px;
+    padding: 28px;
+    border: 1px solid rgba(0, 78, 184, 0.18);
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.72);
+    color: inherit;
+    text-decoration: none;
+    box-shadow: 0 24px 70px rgba(16, 46, 92, 0.12);
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.album-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 30px 80px rgba(16, 46, 92, 0.18);
+}
+
+.album-card h2 {
+    margin: 12px 0 18px;
+}
+
+.album-card span {
+    color: rgba(20, 35, 55, 0.72);
+}
+
+@media (max-width: 720px) {
+    .album-create-card {
+        display: grid;
+    }
+}
+
+/* ALBUM FEATURE START */
+
+.album-page {
+    width: min(1180px, calc(100% - 40px));
+    margin: 80px auto;
+}
+
+.album-box {
+    margin-bottom: 28px;
+}
+
+.image-albums {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.image-albums a {
+    padding: 9px 13px;
+    border: 1px solid rgba(0, 78, 184, 0.18);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.7);
+    color: inherit;
+    text-decoration: none;
+}
+
+.album-empty-text {
+    margin-bottom: 18px;
+}
+
+.album-add-form {
+    display: grid;
+    gap: 14px;
+}
+
+.album-add-form select {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid rgba(0, 78, 184, 0.2);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.92);
+    color: inherit;
+    font: inherit;
+}
+
+.album-remove-form {
+    margin-top: 12px;
+}
+
+.album-remove-form button {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid rgba(130, 0, 0, 0.24);
+    border-radius: 16px;
+    background: rgba(130, 0, 0, 0.06);
+    color: #7a0000;
+    font: inherit;
+    cursor: pointer;
+}
+
+.album-remove-form button:hover {
+    background: rgba(130, 0, 0, 0.12);
+}

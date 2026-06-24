@@ -134,6 +134,26 @@ def create_tables():
                 ON DELETE CASCADE
         )
     """)
+    
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS albums (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS album_images (
+            album_id INT NOT NULL,
+            image_id INT NOT NULL,
+            PRIMARY KEY (album_id, image_id),
+            FOREIGN KEY (album_id) REFERENCES albums(id) ON DELETE CASCADE,
+            FOREIGN KEY (image_id) REFERENCES images(id) ON DELETE CASCADE
+        )
+    """)
+
+    
     connection.commit()
     cursor.close()
     connection.close()
@@ -202,7 +222,6 @@ def detect_mime_type(path: Path, image: Image.Image):
     return "application/octet-stream"
 
 def create_thumbnail_data(image: Image.Image) -> bytes:
-    """Erstellt ein kleines JPEG-Thumbnail und gibt es als Bytes zurück."""
 
     thumbnail = ImageOps.exif_transpose(image).copy()
 

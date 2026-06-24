@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}{{ album.name }} · Aegean Archive{% endblock %}
+
+{% block body_class %}archive-open album-detail-page{% endblock %}
+
+{% block content %}
+
+<section class="album-page">
+    <div class="detail-breadcrumb reveal">
+        <a href="{{ url_for('albums') }}" data-transition-link>
+            <span aria-hidden="true">←</span>
+            Zurück zu den Alben
+        </a>
+
+        <span>Album {{ "%03d"|format(album.id) }}</span>
+    </div>
+
+    <header class="section-heading reveal">
+        <div>
+            <p class="eyebrow">Συλλογή</p>
+            <h1>{{ album.name }}</h1>
+        </div>
+
+        <p>
+            {{ images|length }}
+            Bild{% if images|length != 1 %}er{% endif %}
+            in diesem Album
+        </p>
+    </header>
+
+    {% if images %}
+        <div class="gallery-grid" data-gallery data-view="mosaic">
+            {% for img in images %}
+                <article class="gallery-item gallery-item-{{ loop.index0 % 9 }} reveal-card" data-gallery-item>
+                    <a class="gallery-link" href="/image/{{ img.id }}" data-transition-link>
+                        <figure class="gallery-figure" data-tilt>
+                            <div class="gallery-image-shell">
+                                <div class="image-loader" aria-hidden="true">
+                                    <span></span>
+                                </div>
+
+                                <img
+                                    src="/db-thumbnail/{{ img.id }}"
+                                    alt="{{ img.filename }}"
+                                    loading="lazy"
+                                    decoding="async"
+                                >
+
+                                <span class="image-shine" aria-hidden="true"></span>
+                                <span class="gallery-blue-edge" aria-hidden="true"></span>
+                            </div>
+
+                            <figcaption>
+                                <div>
+                                    <strong>{{ img.filename }}</strong>
+                                    <span>
+                                        {% if img.date %}
+                                            {{ img.date }}
+                                        {% else %}
+                                            Ohne Datum
+                                        {% endif %}
+                                    </span>
+                                </div>
+
+                                <span class="gallery-open" aria-hidden="true">↗</span>
+                            </figcaption>
+                        </figure>
+                    </a>
+
+                    <form
+                        class="album-remove-form"
+                        method="post"
+                        action="{{ url_for(
+                            'remove_image_from_album',
+                            album_id=album.id,
+                            image_id=img.id
+                        ) }}"
+                    >
+                        <button type="submit">
+                            Aus Album entfernen
+                        </button>
+                    </form>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state reveal-card">
+            <div class="empty-symbol" aria-hidden="true">Α</div>
+            <p class="eyebrow">Leeres Album</p>
+            <h3>Dieses Album enthält noch keine Bilder.</h3>
+        </div>
+    {% endif %}
+</section>
+
+{% endblock %}

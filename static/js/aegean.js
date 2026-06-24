@@ -171,33 +171,7 @@
         });
     }
 
-    function setupPointerLight() {
-        if (reduceMotion || !finePointer) return;
-        const orbit = qs("[data-cursor-orbit]");
-        let frame = null;
-        let x = window.innerWidth / 2;
-        let y = window.innerHeight / 3;
-
-        const draw = () => {
-            root.style.setProperty("--pointer-x", `${x}px`);
-            root.style.setProperty("--pointer-y", `${y}px`);
-            if (orbit) orbit.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
-            frame = null;
-        };
-
-        window.addEventListener("pointermove", (event) => {
-            x = event.clientX;
-            y = event.clientY;
-            orbit?.classList.add("is-visible");
-            if (!frame) frame = requestAnimationFrame(draw);
-        }, { passive: true });
-
-        qsa("a, button, input, textarea, summary").forEach((element) => {
-            element.addEventListener("pointerenter", () => orbit?.classList.add("is-active"));
-            element.addEventListener("pointerleave", () => orbit?.classList.remove("is-active"));
-        });
-    }
-
+    
     function setupTransitions() {
         if (reduceMotion) return;
         qsa("[data-transition-link]").forEach((link) => {

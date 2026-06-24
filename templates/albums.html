@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Alben · Aegean Archive{% endblock %}
+
+{% block body_class %}archive-open albums-page{% endblock %}
+
+{% block content %}
+<section class="album-page">
+    <header class="section-heading reveal">
+        <div>
+            <p class="eyebrow">Συλλογές</p>
+            <h1>Alben</h1>
+        </div>
+
+        <p>
+            Bilder können hier zu Gruppen zusammengefasst werden.
+        </p>
+    </header>
+
+    <form class="album-create-card reveal-card" method="post" action="{{ url_for('albums') }}">
+        <label>
+            <span>Neues Album</span>
+
+            <input
+                type="text"
+                name="name"
+                placeholder="z.B. Ferien Athen 2025"
+                required
+            >
+        </label>
+
+        <button class="button button-primary magnetic" type="submit" data-magnetic>
+            <span>Album erstellen</span>
+            <span aria-hidden="true">→</span>
+        </button>
+    </form>
+
+    {% if albums %}
+        <div class="album-grid">
+            {% for album in albums %}
+                <a class="album-card reveal-card" href="{{ url_for('show_album', album_id=album.id) }}" data-transition-link>
+                    <p class="eyebrow">Album {{ "%03d"|format(album.id) }}</p>
+
+                    <h2>{{ album.name }}</h2>
+
+                    <span>
+                        {{ album.image_count }}
+                        Bild{% if album.image_count != 1 %}er{% endif %}
+                    </span>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state reveal-card">
+            <div class="empty-symbol" aria-hidden="true">Α</div>
+            <p class="eyebrow">Noch leer</p>
+            <h3>Noch keine Alben vorhanden.</h3>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

@@ -156,6 +156,117 @@ def load_image_details(image_id):
     return image
 
 
+def load_albums():
+    connection = open_database()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT
+            a.id,
+            a.name,
+            COUNT(ai.image_id)
+        FROM albums a
+        LEFT JOIN album_images ai ON ai.album_id = a.id
+        GROUP BY a.id, a.name
+        ORDER BY a.id DESC
+    """)
+
+    rows = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return [
+        {
+            "id": row[0],
+            "name": row[1],
+            "image_count": row[2],
+        }
+        for row in rows
+    ]
+
+
+def load_album(album_id):
+    connection = open_database()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        "SELECT id, name FROM albums WHERE id = %s",
+        (album_id,),
+    )
+
+    row = cursor.fetchone()
+
+    cursor.close()
+    connection.close()
+
+    if not row:
+        return None
+
+    return {
+        "id": row[0],
+        "name": row[1],
+    }
+
+
+def load_album_images(album_id):
+    connection = open_database()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT
+            i.id,
+            i.filename,
+            px.datetime_original
+        FROM album_images ai
+        INNER JOIN images i ON i.id = ai.image_id
+        LEFT JOIN photoexif px ON px.image_id = i.id
+        WHERE ai.album_id = %s
+        ORDER BY i.id DESC
+    """, (album_id,))
+
+    rows = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return [
+        {
+            "id": row[0],
+            "filename": row[1],
+            "date": row[2],
+        }
+        for row in rows
+    ]
+
+
+def load_image_albums(image_id):
+    connection = open_database()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT
+            a.id,
+            a.name
+        FROM albums a
+        INNER JOIN album_images ai ON ai.album_id = a.id
+        WHERE ai.image_id = %s
+        ORDER BY a.name
+    """, (image_id,))
+
+    rows = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return [
+        {
+            "id": row[0],
+            "name": row[1],
+        }
+        for row in rows
+    ]
+
 def build_metadata_sections(image):
     image_data = [
         ("ID", image["id"]),
@@ -304,7 +415,65 @@ def show_image(image_id):
         image=image,
         sections=build_metadata_sections(image),
         display_value=display_value,
+        albums=load_albums(),
+        image_albums=load_image_albums(image_id),
     )
+
+@app.route("/albums", methods=["GET", "POST"])
+def albums():
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+
+        if name:
+            connection = open_database()
+            cursor = connection.cursor()
+
+            cursor.execute(
+                "INSERT INTO albums (name) VALUES (%s)",
+                (name,)
+            )
+
+            connection.commit()
+            cursor.close()
+            connection.close()
+
+        return redirect(url_for("albums"))
+
+    return render_template(
+        "albums.html",
+        albums=load_albums()
+    )
+
+
+@app.route("/albums/<int:album_id>")
+def show_album(album_id):
+    album = load_album(album_id)
+
+    if not album:
+        abort(404)
+
+    return render_template(
+        "album.html",
+        album=album,
+        images=load_album_images(album_id),
+    )
+    
+@app.post("/albums/<int:album_id>/remove/<int:image_id>")
+def remove_image_from_album(album_id, image_id):
+    connection = open_database()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        DELETE FROM album_images
+        WHERE album_id = %s
+        AND image_id = %s
+    """, (album_id, image_id))
+
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+    return redirect(url_for("show_album", album_id=album_id))
 
 @app.post("/image/<int:image_id>/description")
 def save_image_description(image_id):
@@ -369,6 +538,35 @@ def show_instance():
     return {
         "instance": INSTANCE_NAME,
     }
+
+
+@app.post("/image/<int:image_id>/album")
+def add_image_to_album(image_id):
+    album_id = request.form.get("album_id", type=int)
+
+    if album_id is None:
+        return redirect(url_for("show_image", image_id=image_id))
+
+    connection = open_database()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        INSERT IGNORE INTO album_images (
+            album_id,
+            image_id
+        )
+        VALUES (%s, %s)
+        """,
+        (album_id, image_id),
+    )
+
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+    return redirect(url_for("show_album", album_id=album_id))
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
