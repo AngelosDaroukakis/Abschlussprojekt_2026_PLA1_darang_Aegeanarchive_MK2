@@ -1,33 +1,39 @@
 # Aegean Archive
 
-*Ein containerisiertes Fotoarchiv, das Bilder zusammen mit ihren Metadaten in einer MariaDB-Datenbank speichert und über eine Flask-Weboberfläche anzeigt.*
+*Ein containerisiertes Fotoarchiv, das Bilder zusammen mit Metadaten in einer MariaDB-Datenbank speichert und über eine Flask-Weboberfläche anzeigt.*
+
+## Kurzbeschreibung
+
+*Dieses Projekt ist mein Abschlussprojekt für die individuelle Abschlussarbeit BLJ. Es erweitert ein bestehendes Fotoarchiv zu einer containerisierten Webanwendung mit zentraler Bildspeicherung in der Datenbank.*
 
 ## Überblick
 
-**Aegean Archive** ist mein Abschlussprojekt für die individuelle Abschlussarbeit BLJ.
+**Aegean Archive** ist ein Fotoarchiv, bei dem Bilder nicht mehr nur lokal in einem Ordner liegen, sondern direkt in einer **MariaDB-Datenbank** gespeichert werden.
 
-Das Projekt wurde aus einem bestehenden Fotoarchiv weiterentwickelt. Bilder werden nicht mehr nur aus einem lokalen Ordner geladen, sondern direkt in einer **MariaDB-Datenbank** gespeichert. Dadurch sind die Bilder zentral verfügbar und nicht mehr nur an einen einzelnen Ordner auf dem Computer gebunden.
+Das Ziel des Projekts ist, Bilder zentral zu speichern, über eine Weboberfläche anzuzeigen und wichtige Metadaten wie **Dateiname**, **Dateigrösse**, **Format** und weitere Bildinformationen sichtbar zu machen.
 
-Über die Weboberfläche können Bilder angezeigt, gesucht und nach Datum gefiltert werden. Zusätzlich werden wichtige Metadaten wie Dateiname, Dateigrösse, Format und Bildinformationen gespeichert und angezeigt.
+Die Anwendung läuft mit **Docker Compose** und besteht aus:
 
-Die Anwendung läuft mit **Docker Compose** und besteht aus einer **Flask-App**, einer **MariaDB-Datenbank** und einem **NGINX Reverse Proxy**.
+- **Flask-Webanwendung**
+- **MariaDB-Datenbank**
+- **NGINX Reverse Proxy**
+- **Docker-Container**
 
-**Aktueller Projektstatus:** In Entwicklung
+Der aktuelle Projektstatus ist: **in Entwicklung**.
 
 ## Funktionen
 
-- Bilder über einen Metadata-Reader importieren
+- Bilder importieren
 - Bilder direkt in MariaDB speichern
-- Metadaten zu Bildern speichern und anzeigen
-- Bilder in einer Galerie anzeigen
-- Nach Dateinamen suchen
+- Metadaten auslesen und anzeigen
+- Bilder in einer Galerie darstellen
+- Nach Bildern suchen
 - Bilder nach Datum filtern
-- Detailansicht für einzelne Bilder
+- Detailansicht für einzelne Bilder anzeigen
 - Vorschaubilder für bessere Ladezeiten verwenden
-- Flask-App mit Docker starten
-- MariaDB als zentrale Datenbank verwenden
-- NGINX als Reverse Proxy einsetzen
-- Daten mit einem persistenten Docker-Volume speichern
+- Anwendung mit Docker starten
+- Datenbankdaten mit Docker Volume speichern
+- NGINX als Reverse Proxy verwenden
 
 ## Verwendete Technologien
 
@@ -41,23 +47,6 @@ Die Anwendung läuft mit **Docker Compose** und besteht aus einer **Flask-App**,
 - **Docker**
 - **Docker Compose**
 - **NGINX**
-
-## Aufbau
-
-```text
-Browser
-   |
-   v
-NGINX Reverse Proxy
-   |
-   v
-Flask-App
-   |
-   v
-MariaDB
-```
-
-NGINX nimmt die Anfragen entgegen und leitet sie intern an die Flask-App weiter. Die Flask-App verbindet sich mit MariaDB und lädt die gespeicherten Bilder und Metadaten aus der Datenbank.
 
 ## Projektstruktur
 
@@ -121,7 +110,7 @@ docker compose down
 
 ## Bilder importieren
 
-Der Metadata-Reader wird verwendet, um Bilder auszuwählen und in die Datenbank zu speichern.
+Der **Metadata-Reader** wird verwendet, um Bilder auszuwählen und in die Datenbank zu speichern.
 
 1. Virtuelle Python-Umgebung erstellen
 
@@ -153,9 +142,9 @@ docker compose ps
 python Metadataextractor.py
 ```
 
-6. Einzelne Bilder oder einen ganzen Ordner auswählen
+6. Bilder oder einen ganzen Ordner auswählen
 
-Der Metadata-Reader erstellt die benötigten Tabellen und speichert die Bilder zusammen mit den vorhandenen Metadaten in MariaDB.
+Der Metadata-Reader speichert die Bilder zusammen mit den vorhandenen Metadaten in **MariaDB**.
 
 ## Container verwalten
 
@@ -177,18 +166,6 @@ Logs anzeigen:
 docker compose logs
 ```
 
-Nur die App-Logs anzeigen:
-
-```bash
-docker compose logs app
-```
-
-Nur die NGINX-Logs anzeigen:
-
-```bash
-docker compose logs nginx
-```
-
 Container stoppen:
 
 ```bash
@@ -201,7 +178,7 @@ Container stoppen und Datenbank-Volume löschen:
 docker compose down -v
 ```
 
-**Achtung:** Der Parameter `-v` löscht das MariaDB-Volume. Dadurch werden alle importierten Bilder und Metadaten gelöscht.
+**Achtung:** Der Parameter `-v` löscht das Datenbank-Volume. Dadurch werden alle gespeicherten Bilder und Metadaten gelöscht.
 
 ## Datenbank öffnen
 
@@ -236,7 +213,7 @@ exit;
 
 ## Bildspeicherung
 
-Jedes Originalbild wird in der Datenbank gespeichert.
+Bei diesem Projekt werden die Bilder direkt in der Datenbank gespeichert.
 
 ```text
 Originalbild
@@ -251,12 +228,15 @@ Flask-App
 Galerie / Detailansicht
 ```
 
-Für die Galerie werden kleinere Vorschaubilder verwendet. Dadurch müssen nicht immer grosse Originalbilder direkt geladen werden, was die Oberfläche schneller und übersichtlicher macht.
+Für die Galerie werden kleinere **Vorschaubilder** verwendet. Dadurch muss die Anwendung nicht jedes Mal die grossen Originalbilder laden. Das macht die Oberfläche schneller und übersichtlicher.
 
 ## Geplante Erweiterungen
 
 - Bilder in Alben gruppieren
-- Alben wie **Ferien Athen 2025** erstellen
+- Alben wie zum Beispiel **Ferien Athen 2025** erstellen
+- Oberfläche weiter verbessern
+- Mehr Tests durchführen
+- Mehrinstanz-Betrieb weiter ausbauen
 
 ## Beitrag leisten
 
@@ -268,7 +248,7 @@ Wer etwas beitragen möchte:
 
 2. Repository forken
 
-3. Einen neuen Branch erstellen
+3. Neuen Branch erstellen
 
 ```bash
 git checkout -b feature/beschreibung
