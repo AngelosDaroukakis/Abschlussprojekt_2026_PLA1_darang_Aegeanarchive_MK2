@@ -1,34 +1,33 @@
-# Abschlussprojekt_2026_PLA1_darang_Aegeanarchive_MK2
-*Ein containerisiertes Fotoarchiv, das Bilder zusammen mit ihren Metadaten direkt in einer MariaDB-Datenbank speichert und über eine Flask-Weboberfläche anzeigt.*
+# Aegean Archive
+
+*Ein containerisiertes Fotoarchiv, das Bilder zusammen mit ihren Metadaten in einer MariaDB-Datenbank speichert und über eine Flask-Weboberfläche anzeigt.*
 
 ## Überblick
 
-**Aegean Archive** ist mein Abschlussprojekt im ersten Lehrjahr als Informatiker Plattformentwicklung.
+**Aegean Archive** ist mein Abschlussprojekt für die individuelle Abschlussarbeit BLJ.
 
-Das Projekt wurde aus einem bestehenden lokalen Fotoarchiv weiterentwickelt. Bilder werden nicht mehr nur über einen lokalen Ordner geladen, sondern direkt als Binärdaten in MariaDB gespeichert.
+Das Projekt wurde aus einem bestehenden Fotoarchiv weiterentwickelt. Bilder werden nicht mehr nur aus einem lokalen Ordner geladen, sondern direkt in einer **MariaDB-Datenbank** gespeichert. Dadurch sind die Bilder zentral verfügbar und nicht mehr nur an einen einzelnen Ordner auf dem Computer gebunden.
 
-Über die Weboberfläche können die gespeicherten Bilder in einer Galerie angezeigt, gesucht und nach Datum gefiltert werden. Auf der Detailseite werden zusätzliche Bild- und Kameradaten angezeigt.
+Über die Weboberfläche können Bilder angezeigt, gesucht und nach Datum gefiltert werden. Zusätzlich werden wichtige Metadaten wie Dateiname, Dateigrösse, Format und Bildinformationen gespeichert und angezeigt.
 
-Die Anwendung läuft mit Docker Compose und besteht aus einer Flask-App, einer MariaDB-Datenbank und einem NGINX Reverse Proxy.
+Die Anwendung läuft mit **Docker Compose** und besteht aus einer **Flask-App**, einer **MariaDB-Datenbank** und einem **NGINX Reverse Proxy**.
 
 **Aktueller Projektstatus:** In Entwicklung
 
 ## Funktionen
 
-- Bilder über den Metadata-Reader importieren
-- Bilder direkt als `LONGBLOB` in MariaDB speichern
-- Dateiname, Grösse, Format und Bildabmessungen speichern
-- EXIF- und GPS-Daten auslesen
+- Bilder über einen Metadata-Reader importieren
+- Bilder direkt in MariaDB speichern
+- Metadaten zu Bildern speichern und anzeigen
 - Bilder in einer Galerie anzeigen
 - Nach Dateinamen suchen
-- Bilder nach Aufnahmedatum filtern
-- Detailansicht mit Bild- und Kameradaten
-- Kleine Vorschaubilder für die Galerie erzeugen
-- Grössere Vorschaubilder auf der Detailseite anzeigen
-- EXIF-Ausrichtung automatisch beachten
-- Flask-App und MariaDB mit Docker Compose starten
+- Bilder nach Datum filtern
+- Detailansicht für einzelne Bilder
+- Vorschaubilder für bessere Ladezeiten verwenden
+- Flask-App mit Docker starten
+- MariaDB als zentrale Datenbank verwenden
+- NGINX als Reverse Proxy einsetzen
 - Daten mit einem persistenten Docker-Volume speichern
-- NGINX als Reverse Proxy verwenden
 
 ## Verwendete Technologien
 
@@ -56,16 +55,14 @@ Flask-App
    |
    v
 MariaDB
-````
+```
 
-NGINX nimmt die Anfragen auf Port `8080` entgegen und leitet sie intern an die Flask-App auf Port `5000` weiter.
-
-Die Flask-App und MariaDB kommunizieren über das interne Docker-Netzwerk `aegean-network`.
+NGINX nimmt die Anfragen entgegen und leitet sie intern an die Flask-App weiter. Die Flask-App verbindet sich mit MariaDB und lädt die gespeicherten Bilder und Metadaten aus der Datenbank.
 
 ## Projektstruktur
 
 ```text
-Aegean-Archive/
+Abschlussprojekt_2026_PLA1_darang_Aegeanarchive_MK2/
 ├── nginx/
 │   └── nginx.conf
 ├── static/
@@ -83,74 +80,80 @@ Aegean-Archive/
 
 ### Voraussetzungen
 
-Für den Betrieb werden folgende Programme benötigt:
+Für das Projekt werden folgende Programme benötigt:
 
-* Docker Desktop
-* Docker Compose
-* Git
-* Python für den lokalen Metadata-Reader
+- **Docker Desktop**
+- **Docker Compose**
+- **Git**
+- **Python**
 
-### Projekt herunterladen
+### Projekt herunterladen und starten
 
-1. Repository klonen:
+1. Repository klonen
 
 ```bash
 git clone https://github.com/AngelosDaroukakis/Abschlussprojekt_2026_PLA1_darang_Aegeanarchive_MK2.git
 ```
 
-2. In den Projektordner wechseln:
+2. In den Projektordner wechseln
 
 ```bash
 cd Abschlussprojekt_2026_PLA1_darang_Aegeanarchive_MK2
 ```
 
-3. Container bauen und starten:
+3. Container bauen und starten
 
 ```bash
 docker compose up --build
 ```
 
-4. Die Anwendung im Browser öffnen:
+4. Anwendung im Browser öffnen
 
 ```text
 http://localhost:8080
 ```
 
+5. Container stoppen
+
+```bash
+docker compose down
+```
+
 ## Bilder importieren
 
-Der Metadata-Reader läuft aktuell direkt auf dem Computer und verbindet sich über Port `3307` mit der MariaDB im Container.
+Der Metadata-Reader wird verwendet, um Bilder auszuwählen und in die Datenbank zu speichern.
 
-1. Virtuelle Python-Umgebung erstellen:
+1. Virtuelle Python-Umgebung erstellen
 
 ```bash
 python -m venv .venv
 ```
 
-2. Virtuelle Umgebung unter Windows aktivieren:
+2. Virtuelle Umgebung unter Windows aktivieren
 
 ```bash
 .venv\Scripts\activate
 ```
 
-3. Benötigte Python-Pakete installieren:
+3. Benötigte Pakete installieren
 
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Sicherstellen, dass Docker Compose läuft:
+4. Sicherstellen, dass Docker Compose läuft
 
 ```bash
 docker compose ps
 ```
 
-5. Metadata-Reader starten:
+5. Metadata-Reader starten
 
 ```bash
 python Metadataextractor.py
 ```
 
-6. Einzelne Bilder oder einen ganzen Ordner auswählen.
+6. Einzelne Bilder oder einen ganzen Ordner auswählen
 
 Der Metadata-Reader erstellt die benötigten Tabellen und speichert die Bilder zusammen mit den vorhandenen Metadaten in MariaDB.
 
@@ -192,13 +195,13 @@ Container stoppen:
 docker compose down
 ```
 
-Container stoppen und die Datenbank vollständig löschen:
+Container stoppen und Datenbank-Volume löschen:
 
 ```bash
 docker compose down -v
 ```
 
-**Achtung:** Der Parameter `-v` löscht das MariaDB-Volume. Dadurch gehen alle importierten Bilder und Metadaten verloren.
+**Achtung:** Der Parameter `-v` löscht das MariaDB-Volume. Dadurch werden alle importierten Bilder und Metadaten gelöscht.
 
 ## Datenbank öffnen
 
@@ -233,61 +236,60 @@ exit;
 
 ## Bildspeicherung
 
-Jedes Originalbild wird nur einmal in der Spalte `image_data` gespeichert.
-
-```sql
-image_data LONGBLOB
-```
-
-Für die Galerie und die Detailseite werden kleinere Versionen dynamisch mit Pillow erstellt.
+Jedes Originalbild wird in der Datenbank gespeichert.
 
 ```text
-Originalbild in MariaDB
-        |
-        v
-Flask und Pillow
-        |
-        ├── kleines Vorschaubild für die Galerie
-        └── grösseres Vorschaubild für die Detailseite
+Originalbild
+   |
+   v
+MariaDB
+   |
+   v
+Flask-App
+   |
+   v
+Galerie / Detailansicht
 ```
 
-Dadurch müssen in der Galerie nicht mehrere grosse Originalbilder gleichzeitig geladen werden.
+Für die Galerie werden kleinere Vorschaubilder verwendet. Dadurch müssen nicht immer grosse Originalbilder direkt geladen werden, was die Oberfläche schneller und übersichtlicher macht.
 
 ## Geplante Erweiterungen
 
-* Beschreibungen zu Bildern hinzufügen
-* Bilder in Alben gruppieren
-* Alben wie `Ferien Athen 2025` erstellen
-* Mehrere Flask-Instanzen verwenden
-* NGINX als Load Balancer einsetzen
-* Weitere Tests und Verbesserungen durchführen
+- Bilder in Alben gruppieren
+- Alben wie **Ferien Athen 2025** erstellen
 
 ## Beitrag leisten
 
-Beiträge und Verbesserungsvorschläge können über GitHub eingebracht werden.
+Da dieses Projekt ein Abschlussprojekt ist, werden Änderungen kontrolliert gemacht.
 
-1. Ein neues Issue mit einer verständlichen Beschreibung erstellen.
-2. Das Repository forken.
-3. Einen eigenen Branch erstellen:
+Wer etwas beitragen möchte:
+
+1. Ein neues Issue mit einer verständlichen Beschreibung erstellen
+
+2. Repository forken
+
+3. Einen neuen Branch erstellen
 
 ```bash
 git checkout -b feature/beschreibung
 ```
 
-4. Änderungen testen und committen:
+4. Änderungen testen
+
+5. Änderungen committen
 
 ```bash
 git add .
 git commit -m "Add new feature"
 ```
 
-5. Den Branch pushen:
+6. Branch hochladen
 
 ```bash
 git push origin feature/beschreibung
 ```
 
-6. Einen Pull Request erstellen und die Änderungen kurz erklären.
+7. Pull Request erstellen und die Änderung kurz erklären
 
 Pull Requests sollten nur Änderungen enthalten, die zum Projekt passen und vorher getestet wurden.
 
@@ -295,13 +297,15 @@ Pull Requests sollten nur Änderungen enthalten, die zum Projekt passen und vorh
 
 Für dieses Projekt ist aktuell noch keine eigene Lizenz hinterlegt.
 
-**Autor:** angelosdaroukakis
+**NAME:** Angelos Daroukakis  
+**Projekt:** Individuelle Abschlussarbeit BLJ  
+**Repository:** https://github.com/AngelosDaroukakis/Abschlussprojekt_2026_PLA1_darang_Aegeanarchive_MK2
 
 Verwendete Technologien und externe Projekte:
 
-* Flask
-* MariaDB
-* Pillow
-* Docker
-* Docker Compose
-* NGINX
+- **Flask**
+- **MariaDB**
+- **Pillow**
+- **Docker**
+- **Docker Compose**
+- **NGINX**
